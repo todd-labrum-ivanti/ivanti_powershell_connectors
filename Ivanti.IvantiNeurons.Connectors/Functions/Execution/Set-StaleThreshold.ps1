@@ -32,7 +32,7 @@ function Set-StaleThresholdInt {
 
             $timeSpan = New-TimeSpan -Start $LastSeen -End (Get-Date).ToUniversalTime()
 
-            if ($StaleThreshold -le $timeSpan.Days) {
+            if ($StaleThreshold -ge $timeSpan.Days) {
                 #Returns true since the record is within the stale threshold.
                 return $true
             }
