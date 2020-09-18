@@ -1,7 +1,28 @@
+ <#
+    .SYNOPSIS
+    Run to check whether a record is withing the specified threshold or not.
+
+    .DESCRIPTION
+    Use this function to determine if a record's last seen date is within a customer provided stale threshold parameter.  Will return a true or false value.
+
+    .PARAMETER StaleThreshold
+    Mandatory. Integer that represents how many days of data to check against the provided last seen date.
+
+    .PARAMETER LastSeen
+    Mandatory. Date for the record when it was last seen.
+
+    .NOTES
+    Author:  Ivanti
+    Version: 1.0.0
+#>
+
 #Set threshold to filter out devices based on desired time frame (e.g. only get devices active in the last 30 days). 
-function Set-StaleThreshold {
+function Set-StaleThresholdInt {
     param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         [int]$StaleThreshold,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $false)]
         $LastSeen
     )
    
@@ -12,8 +33,21 @@ function Set-StaleThreshold {
             $timeSpan = New-TimeSpan -Start $LastSeen -End (Get-Date).ToUniversalTime()
 
             if ($StaleThreshold -le $timeSpan.Days) {
-                break
+                #Returns true since the record is within the stale threshold.
+                return $true
+            }
+            else {
+                #Returns false since the record is not within the stale threshold.
+                return $false
             }
         }
+        else {
+            #If a date is not provided, then we will return false.  We won't import the data because we can't tell if the record is within the stale threshold or not.
+            return $false
+        }
+    }
+    else  {
+        #If StaleThreshold is 0, then we will return true.  0 is essentially not providing a stale threshold.
+        return $true
     }
 }
